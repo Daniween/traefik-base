@@ -1,0 +1,55 @@
+version: "3.8"
+
+services:
+
+    traefik:
+        image: "traefik:v2.6"
+        container_name: "traefik"
+        command:
+            - "--api.insecure=true"
+            - "--api.dashboard=true"
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--providers.file.directory=/etc/traefik"
+            - "--providers.file.watch=true"
+            - "--entrypoints.web.address=:80"
+            - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+            - "--entrypoints.websecure.address=:443"
+            - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+            - "--certificatesresolvers.myresolver.acme.email=mail@mail.com"
+            - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+        ports:
+            - "80:80"
+            - "443:443"
+            - "8080:8080"
+        volumes:
+            - "./letsencrypt:/letsencrypt"
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+            - ".:/etc/traefik"
+        networks:
+            - web
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.traefik.rule=Host(`traefik.nomdedomaine.com`)"
+            - "traefik.http.routers.traefik.entrypoints=websecure"
+            - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+            - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+            - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+            - "traefik.http.routers.redirs.entrypoints=websecure"
+            - "traefik.http.routers.redirs.middlewares=redirect-to-https"
+            
+    whoami:
+        image: "traefik/whoami"
+        container_name: "traefik-whoami"
+        networks:
+            - web
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.whoami.rule=Host(`whoami.nomdedomaine.com`)"
+            - "traefik.http.routers.whoami.entrypoints=websecure"
+            - "traefik.http.routers.whoami.tls.certresolver=myresolver"        
+
+networks:
+    web:
+        external:
+            name: web
