@@ -3,8 +3,7 @@
 > Prise en charge du certificat SSL
 > Prise en charge du reverse proxy
 
-
-!! A modifier!!
+## A modifier
 
 traefik-docker-compose.yml ligne 19
 Remplacez votre adresse mail :
