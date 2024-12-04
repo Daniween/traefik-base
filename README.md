@@ -7,11 +7,7 @@
 
 traefik-docker-compose.yml  
 ligne 19  
-Remplacez votre adresse mail :
-
-```
-whoami.nomdedomaine.com
-```
+Remplacez votre adresse mail
 
 traefik-docker-compose.yml  
 ligne 33  
