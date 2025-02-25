@@ -25,7 +25,6 @@ services:
             - "traefik.enable=true"
             - "traefik.http.routers.traefik.rule=Host(`traefik.nomdedomaine.com`)"
             - "traefik.http.routers.traefik.entrypoints=web"
-            - "traefik.http.routers.traefik.tls.certresolver=myresolver"
             - "traefik.http.services.traefik.loadbalancer.server.port=8080"
                
     whoami:
