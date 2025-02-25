@@ -1,0 +1,43 @@
+version: "3.8"
+
+services:
+
+    traefik:
+        image: "traefik:v2.6"
+        container_name: "traefik"
+        command:
+            - "--api.insecure=true"
+            - "--api.dashboard=true"
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--providers.file.directory=/etc/traefik"
+            - "--providers.file.watch=true"
+            - "--entrypoints.web.address=:80"
+        ports:
+            - "80:80"
+            - "8080:8080"
+        volumes:
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
+            - ".:/etc/traefik"
+        networks:
+            - web
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.traefik.rule=Host(`traefik.nomdedomaine.com`)"
+            - "traefik.http.routers.traefik.entrypoints=web"
+            - "traefik.http.routers.traefik.tls.certresolver=myresolver"
+            - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+               
+    whoami:
+        image: "traefik/whoami"
+        container_name: "traefik-whoami"
+        networks:
+            - web
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.whoami.rule=Host(`whoami.nomdedomaine.com`)"
+
+networks:
+    web:
+        external:
+            name: web
