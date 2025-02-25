@@ -51,5 +51,4 @@ services:
 
 networks:
     web:
-        external:
-            name: web
+        driver: bridge
